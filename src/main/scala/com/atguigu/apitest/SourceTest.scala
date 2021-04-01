@@ -1,11 +1,11 @@
 package com.atguigu.apitest
 
 import java.util.Properties
-
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.streaming.api.functions.source.SourceFunction
 import org.apache.flink.streaming.api.scala._
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011
+import org.apache.flink.streaming.connectors.kafka.{FlinkKafkaConsumer011, FlinkKafkaConsumerBase}
+import org.apache.flink.streaming.connectors.kafka.internal.FlinkKafkaProducer
 
 import scala.util.Random
 
@@ -36,7 +36,7 @@ object SourceTest {
       SensorReading("sensor_10", 1547718205, 38.1)
     )
     val stream1 = env.fromCollection(dataList)
-//    env.fromElements(1.0, 35, "hello")
+    env.fromElements(1.0, 35, "hello") // TODO: fromElements支持任意类型，适合测试使用！！
 
     // 2. 从文件中读取数据
     val inputPath = "D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\sensor.txt"

@@ -26,9 +26,9 @@ object KafkaSinkTest {
 
     // 从kafka读取数据
     val properties = new Properties()
-    properties.setProperty("bootstrap.servers", "localhost:9092")
+    properties.setProperty("bootstrap.servers", "node11:9092")
     properties.setProperty("group.id", "consumer-group")
-    val stream = env.addSource( new FlinkKafkaConsumer011[String]("sensor", new SimpleStringSchema(), properties) )
+    val stream = env.addSource( new FlinkKafkaConsumer011[String]("test_produce", new SimpleStringSchema(), properties) )
 
 
     // 先转换成样例类类型（简单转换操作）
@@ -38,7 +38,7 @@ object KafkaSinkTest {
         SensorReading(arr(0), arr(1).toLong, arr(2).toDouble).toString
       } )
 
-    dataStream.addSink( new FlinkKafkaProducer011[String]("localhost:9092", "sinktest", new SimpleStringSchema()) )
+    dataStream.addSink( new FlinkKafkaProducer011[String]("node11:9092", "test", new SimpleStringSchema()) )
 
     env.execute("kafka sink test")
   }

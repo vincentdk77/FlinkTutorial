@@ -32,9 +32,11 @@ object StreamWordCount {
       .flatMap(_.split(" "))
       .filter(_.nonEmpty)
       .map((_, 1))
-      .keyBy(0)
+      .keyBy(0) // TODO: keyBy就是groupBy
       .sum(1)
 
+    // TODO: flink每一个算子都可以单独设置并行度，不会互相影响  一般输出到文件时会设置并行度为1
+    // TODO: 如果不设置1,那么打印的时候，会有前缀 1..,2..,3..,4..
     resultDataStream.print().setParallelism(1)
 
     // 启动任务执行
