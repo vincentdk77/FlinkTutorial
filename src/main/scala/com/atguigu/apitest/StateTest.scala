@@ -64,7 +64,7 @@ object StateTest {
     // 需求：对于温度传感器温度值跳变，超过10度，报警
      val alertStream = dataStream
       .keyBy(_.id)
-//      .flatMap( new TempChangeAlert(10.0) )
+//      .flatMap( new TempChangeAlert(10.0) ) todo 需要在外部定义一个RichFunction  不推荐!
       .flatMapWithState[(String, Double, Double), Double] {
          case (data: SensorReading, None) => ( List.empty, Some(data.temperature) )
          case (data: SensorReading, lastTemp: Some[Double]) => {
@@ -103,7 +103,7 @@ class TempChangeAlert(threshold: Double) extends RichFlatMapFunction[SensorReadi
   }
 }
 
-// Keyed state测试：必须定义在RichFunction中，因为需要运行时上下文
+// Keyed state测试：todo 必须定义在RichFunction中，因为需要运行时上下文
 class MyRichMapper1 extends RichMapFunction[SensorReading, String]{
   var valueState: ValueState[Double] = _
   lazy val listState: ListState[Int] = getRuntimeContext.getListState( new ListStateDescriptor[Int]("liststate", classOf[Int]) )

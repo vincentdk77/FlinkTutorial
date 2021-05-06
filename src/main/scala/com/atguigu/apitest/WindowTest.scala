@@ -20,7 +20,7 @@ object WindowTest {
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     env.setParallelism(1)
-    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime) // TODO: waterMarker三部  1、设定时间类型 
     env.getConfig.setAutoWatermarkInterval(50)
 
     // 读取数据
@@ -36,7 +36,7 @@ object WindowTest {
         SensorReading(arr(0), arr(1).toLong, arr(2).toDouble)
       } )
 //      .assignAscendingTimestamps(_.timestamp * 1000L)    // 升序数据提取时间戳
-      .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[SensorReading](Time.seconds(3)) {
+      .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[SensorReading](Time.seconds(3)) {//最大乱序时间
       override def extractTimestamp(element: SensorReading): Long = element.timestamp * 1000L
     })
 
@@ -48,8 +48,8 @@ object WindowTest {
 //      .window( TumblingEventTimeWindows.of(Time.seconds(15)))    // 滚动时间窗口
 //      .window( SlidingProcessingTimeWindows.of(Time.seconds(15), Time.seconds(3)) )    // 滑动时间窗口
 //      .window( EventTimeSessionWindows.withGap(Time.seconds(10)) )    // 会话窗口
-      //      .countWindow(10)    // 滚动计数窗口
-      .timeWindow(Time.seconds(15))
+//      .countWindow(10)    // 滚动计数窗口
+      .timeWindow(Time.seconds(15)) // TODO: 传两个参数就是滑动，一个参数就是滚动
         .allowedLateness(Time.minutes(1))
         .sideOutputLateData(latetag)
 //      .minBy(1)

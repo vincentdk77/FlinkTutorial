@@ -33,7 +33,8 @@ object TransformTest {
     val aggStream = dataStream
       .keyBy("id")    // 根据id进行分组
       .minBy("temperature") // TODO: 如果这里用min，也会求出该字段的最小值，但是其他字段都是最开始进来的数据，所以不合适！
-    //aggStream.print()
+
+    aggStream.print("分组聚合")
 
     // 3.需要输出当前最小的温度值，以及最大的时间戳，要用reduce
     val resultStream = dataStream
@@ -55,7 +56,7 @@ object TransformTest {
     val lowTempStream = splitStream.select("low")
     val allTempStream = splitStream.select("high", "low")
 
-//    highTempStream.print("high")  todo  输入字符串可以指定打印的前缀，便于区分不同的流
+//    highTempStream.print("high")  //todo  输入字符串可以指定打印的前缀，便于区分不同的流
 //    lowTempStream.print("low")
 //    allTempStream.print("all")
 

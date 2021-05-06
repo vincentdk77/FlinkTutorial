@@ -39,6 +39,7 @@ object JdbcSinkTest {
   }
 }
 
+// TODO: 使用RichSinkFunction，建立、关闭连接不是一条条的建立，而是在open、close方法中统一进行！
 class MyJdbcSinkFunc() extends RichSinkFunction[SensorReading]{
   // 定义连接、预编译语句
   var conn: Connection = _

@@ -19,6 +19,7 @@ object StreamWordCount {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
 //    env.setParallelism(8)
 //    env.disableOperatorChaining()
+    // TODO: 不要忘记导包！ import org.apache.flink.streaming.api.scala._
 
     // 从外部命令中提取参数，作为socket主机名和端口号
     val paramTool: ParameterTool = ParameterTool.fromArgs(args)
