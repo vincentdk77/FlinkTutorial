@@ -33,19 +33,19 @@ object StateTest {
     // 开启checkpoint
     env.enableCheckpointing()
 
-    // checkpoint的配置
+    // checkpoint的配置（生产环境一般最多配置前五个即可）
     val chkpConfig = env.getCheckpointConfig
-    chkpConfig.setCheckpointInterval(10000L)
+    chkpConfig.setCheckpointInterval(10000L)//前一个checkPoint头部到后一个checkPoint头部的间隔时间
     chkpConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
-    chkpConfig.setCheckpointTimeout(60000)
-    chkpConfig.setMaxConcurrentCheckpoints(2)
-    chkpConfig.setMinPauseBetweenCheckpoints(500L)
+    chkpConfig.setCheckpointTimeout(60000)//checkpoint执行时间，超时该checkPoint就会被丢弃
+    chkpConfig.setMaxConcurrentCheckpoints(2)//最大并行执行的checkPoint任务个数，默认1
+    chkpConfig.setMinPauseBetweenCheckpoints(500L)//前后两次checkPoint最小间隔时间（前一个尾部到后一个头部的间隔时间）
     chkpConfig.setPreferCheckpointForRecovery(true)
     chkpConfig.setTolerableCheckpointFailureNumber(0)
 
     // 重启策略配置
-//    env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, 10000L))
-    env.setRestartStrategy(RestartStrategies.failureRateRestart(5, Time.minutes(5), Time.seconds(10)))
+//    env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, 10000L)) //3次重启，失败之间时间间隔10s
+    env.setRestartStrategy(RestartStrategies.failureRateRestart(5, Time.minutes(5), Time.seconds(10)))//在5分钟内失败5次，失败之间间隔时间是10s
 
     // 读取数据
     //    val inputPath = "D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\sensor.txt"
