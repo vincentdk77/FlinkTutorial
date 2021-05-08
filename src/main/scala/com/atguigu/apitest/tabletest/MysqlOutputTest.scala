@@ -14,7 +14,7 @@ import org.apache.flink.table.descriptors._
   *
   * Created by wushengran on 2020/8/11 9:27
   */
-object EsOutputTest {
+object MysqlOutputTest {
   def main(args: Array[String]): Unit = {
     // 1. 创建环境
     val env = StreamExecutionEnvironment.getExecutionEnvironment
@@ -46,23 +46,24 @@ object EsOutputTest {
       .groupBy('id) // 基于id分组
       .select('id, 'id.count as 'count)
 
-    // 4. 输出到es
-    tableEnv.connect(new Elasticsearch()
-      .version("6")
-      .host("localhost", 9200, "http")
-      .index("sensor")
-      .documentType("temperature")
-    )
-      .inUpsertMode() // TODO: 设置更新模式为upsert模式！(ES不支持 retract 模式！) Elasticsearch6UpsertTableSink
-      .withFormat(new Json())//需要引入flink json 依赖
-      .withSchema(new Schema()
-        .field("id", DataTypes.STRING())
-        .field("count", DataTypes.BIGINT())
-      )
-      .createTemporaryTable("esOutputTable")
+    // 4. 输出到mysql
+    val sinkDDL: String =
+      """
+        |create table jdbcOutputTable (
+        | id varchar(20) not null,
+        | cnt bigint not null
+        |) with (
+        | 'connector.type' = 'jdbc',
+        | 'connector.url' = 'jdbc:mysql://localhost:3306/test',
+        | 'connector.table' = 'sensor_count',
+        | 'connector.driver' = 'com.mysql.jdbc.Driver',
+        | 'connector.username' = 'root',
+        | 'connector.password' = '123456'
+        |)
+        """.stripMargin
 
-    // TODO: 虽然是upsert模式，这里还是要写成insertInto
-    aggTable.insertInto("esOutputTable")
+    tableEnv.sqlUpdate(sinkDDL)
+    aggTable.insertInto("jdbcOutputTable")
 
     env.execute("es output test")
 

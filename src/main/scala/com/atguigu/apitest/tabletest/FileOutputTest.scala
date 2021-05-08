@@ -24,10 +24,10 @@ object FileOutputTest {
     val tableEnv = StreamTableEnvironment.create(env)
 
     // 2. 连接外部系统，读取数据，注册表
-    val filePath = "D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\sensor.txt"
+    val filePath = "D:\\JavaRelation\\Workpaces\\myproject\\bigData\\flink2020\\FlinkTutorial\\src\\main\\resources\\sensor.txt"
 
     tableEnv.connect(new FileSystem().path(filePath))
-      .withFormat(new Csv())
+      .withFormat(new Csv())//需要引入flink csv依赖
       .withSchema(new Schema()
         .field("id", DataTypes.STRING())
         .field("timestamp", DataTypes.BIGINT())
@@ -50,7 +50,7 @@ object FileOutputTest {
 
     // 4. 输出到文件
     // 注册输出表
-    val outputPath = "D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\output.txt"
+    val outputPath = "D:\\JavaRelation\\Workpaces\\myproject\\bigData\\flink2020\\FlinkTutorial\\src\\main\\resources\\output.txt"
 
     tableEnv.connect(new FileSystem().path(outputPath))
       .withFormat(new Csv())
@@ -61,9 +61,17 @@ object FileOutputTest {
       )
       .createTemporaryTable("outputTable")
 
+    // TODO: CSV TableSink，如果做了更新操作就不能写了，只支持新增数据 ！！所以这里aggTable无法insert
     resultTable.insertInto("outputTable")
 
     resultTable.toAppendStream[(String, Double)].print("result")
+
+    // TODO: AggTable不能转成追加流，因为会更新数据！用撤回模式retractStream，实际上是加了一个boolean字段，最新更新的数据为true，老的数据为false
+//    在撤回模式下，表和外部连接器交换的是：添加（Add）和撤回（Retract）消息。
+//     插入（Insert）会被编码为添加消息；
+//     删除（Delete）则编码为撤回消息；
+//     更新（Update）则会编码为，已更新行（上一行）的撤回消息，和更新行（新行） 的添加消息。
+//    在此模式下，不能定义 key，这一点跟 upsert 模式完全不同
     aggTable.toRetractStream[Row].print("agg")
 
     env.execute()

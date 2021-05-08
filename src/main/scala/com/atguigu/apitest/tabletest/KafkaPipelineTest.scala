@@ -59,10 +59,11 @@ object KafkaPipelineTest {
       .withFormat(new Csv())
       .withSchema(new Schema()
         .field("id", DataTypes.STRING())
-        .field("temp", DataTypes.DOUBLE())
+        .field("temp", DataTypes.DOUBLE()) // TODO: 这个字段可以和输入的字段名称不一样，所以可以重命名！
       )
       .createTemporaryTable("kafkaOutputTable")
 
+    // TODO:  KafkaTableSink也只支持追加模式 可以看KafkaTableSinkBase类
     resultTable.insertInto("kafkaOutputTable")
 
     env.execute("kafka pipeline test")
