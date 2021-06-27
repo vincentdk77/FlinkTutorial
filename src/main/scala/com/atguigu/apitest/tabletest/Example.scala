@@ -6,13 +6,7 @@ import org.apache.flink.table.api.Table
 import org.apache.flink.table.api.scala._
 
 /**
-  * Copyright (c) 2018-2028 尚硅谷 All Rights Reserved 
-  *
-  * Project: FlinkTutorial
-  * Package: com.atguigu.apitest.tabletest
-  * Version: 1.0
-  *
-  * Created by wushengran on 2020/8/10 11:49
+  * 基于dataStream创建table
   */
 object Example {
   def main(args: Array[String]): Unit = {
@@ -34,7 +28,7 @@ object Example {
     // 首先创建表执行环境
     val tableEnv = StreamTableEnvironment.create(env)
 
-    // 基于流创建一张表
+    // 基于流创建一张表 todo 将DataStream转成Table
     val dataTable: Table = tableEnv.fromDataStream(dataStream)
 
     // 调用table api进行转换
@@ -47,7 +41,8 @@ object Example {
     val sql: String = "select id, temperature from dataTable where id = 'sensor_1'"
     val resultSqlTable = tableEnv.sqlQuery(sql)
 
-    //需要引入隐式转换，才可以打印 import org.apache.flink.table.api.scala._
+    //flink table打印需要引入隐式转换 import org.apache.flink.table.api.scala._
+    // TODO: 将Table转成DataStream
     resultTable.toAppendStream[(String, Double)].print("result")
     resultSqlTable.toAppendStream[(String, Double)].print("result sql")
 

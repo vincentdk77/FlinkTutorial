@@ -8,13 +8,7 @@ import org.apache.flink.streaming.api.scala._
 import org.apache.flink.util.Collector
 
 /**
-  * Copyright (c) 2018-2028 尚硅谷 All Rights Reserved 
-  *
-  * Project: FlinkTutorial
-  * Package: com.atguigu.apitest
-  * Version: 1.0
-  *
-  * Created by wushengran on 2020/8/8 15:56
+  * 侧输出流（SideOutput），不需要分组keyBy
   */
 object SideOutputTest {
   def main(args: Array[String]): Unit = {

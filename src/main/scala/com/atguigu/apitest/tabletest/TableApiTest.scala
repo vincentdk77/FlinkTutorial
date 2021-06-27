@@ -7,13 +7,9 @@ import org.apache.flink.table.api.scala._
 import org.apache.flink.table.descriptors._
 
 /**
-  * Copyright (c) 2018-2028 尚硅谷 All Rights Reserved 
-  *
-  * Project: FlinkTutorial
-  * Package: com.atguigu.apitest.tabletest
-  * Version: 1.0
-  *
-  * Created by wushengran on 2020/8/10 14:23
+  * 直接创建Table（不基于DataStream）,更通用！
+ *
+ * 看起来是表操作（批处理），本质上还是基于dataStream来处理的
   */
 object TableApiTest {
   def main(args: Array[String]): Unit = {
@@ -55,7 +51,8 @@ object TableApiTest {
     val filePath = "D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\sensor.txt"
 
     tableEnv.connect(new FileSystem().path(filePath))
-      .withFormat(new Csv())
+      // TODO: 需要定义序列化方式+表的schema比较繁琐！还不如从DataStream创建Table （参考Example）
+      .withFormat(new Csv()) //csv格式以匹配那种用逗号分隔的文本
       .withSchema(new Schema()
         .field("id", DataTypes.STRING())
         .field("timestamp", DataTypes.BIGINT())
@@ -82,7 +79,7 @@ object TableApiTest {
     // 3.1 使用table api
     val sensorTable = tableEnv.from("inputTable")
     val resultTable = sensorTable
-      .select('id, 'temperature)
+      .select('id, 'temperature) // TODO: 这里是单引号，也可以这样写 "id, temperature"
       .filter('id === "sensor_1")
 
     // 3.2 SQL
