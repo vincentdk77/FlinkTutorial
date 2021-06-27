@@ -47,6 +47,7 @@ object Example {
     val sql: String = "select id, temperature from dataTable where id = 'sensor_1'"
     val resultSqlTable = tableEnv.sqlQuery(sql)
 
+    //需要引入隐式转换，才可以打印 import org.apache.flink.table.api.scala._
     resultTable.toAppendStream[(String, Double)].print("result")
     resultSqlTable.toAppendStream[(String, Double)].print("result sql")
 
